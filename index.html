@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nexo IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f5f2;--sf:#fff;--tx:#17191c;--mu:#69717a;--ac:#0b8a80;--ac2:#e5533d;--ln:#dde1e3;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101315;--sf:#181c1f;--tx:#eceff1;--mu:#8f979f;--ac:#3cc7ba;--ac2:#ff7a63;--ln:#2a3034;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101315;--sf:#181c1f;--tx:#eceff1;--mu:#8f979f;--ac:#3cc7ba;--ac2:#ff7a63;--ln:#2a3034;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 'Bricolage Grotesque',system-ui,sans-serif}
+main{padding:18px 16px 110px;max-width:980px;margin:auto}
+h1,h2{font-weight:800;letter-spacing:-.02em;margin:.2em 0 .5em}h1{font-size:2rem}h2{font-size:1.5rem}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:4px;overflow-x:auto;background:var(--sf);border-top:1px solid var(--ln);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+nav button{flex:0 0 auto;border:0;background:none;color:var(--mu);font:600 14px inherit;font-family:inherit;padding:10px 14px;border-radius:10px}
+nav button.on{background:var(--ac);color:#fff}
+@media(min-width:860px){nav{top:0;right:auto;width:180px;flex-direction:column;border-top:0;border-right:1px solid var(--ln);padding-top:24px}nav button{text-align:left}main{margin-left:200px;padding-bottom:40px}}
+input,textarea,select,button.b{font:inherit;color:var(--tx);background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:9px 12px;max-width:100%}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--ac)}input[type=color]{padding:2px;height:40px;width:48px}
+textarea{width:100%;min-height:180px;resize:vertical}
+button.b{cursor:pointer;font-weight:600}button.p{background:var(--ac);border-color:var(--ac);color:#fff}button.d{color:var(--ac2)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.f{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}.f>input[type=text],.f>input:not([type]){flex:1;min-width:140px}
+.chip{border-radius:99px!important;padding:6px 14px!important}.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.row{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--ln)}.row span{flex:1}
+.row small,.mu{color:var(--mu)}.late{color:var(--ac2)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;border:1px solid var(--ln);border-radius:14px;overflow:hidden;margin:14px 0}
+.tiles button{border:0;border-right:1px solid var(--ln);background:var(--sf);color:var(--tx);padding:16px;text-align:left;font-family:inherit;cursor:pointer}
+.tiles b{display:block;font-size:2rem;font-weight:800;line-height:1.1}
+.two{display:grid;grid-template-columns:1fr;gap:16px}@media(min-width:760px){.two{grid-template-columns:240px 1fr}}
+.nl button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--ln);background:none;color:var(--tx);padding:10px 4px;font:inherit;cursor:pointer}
+.nl button.on{color:var(--ac);font-weight:800}
+.msgs{display:flex;flex-direction:column;gap:8px;min-height:260px;max-height:55vh;overflow:auto;padding:4px 0}
+.m{padding:10px 14px;border-radius:14px;max-width:88%;white-space:pre-wrap}.u{align-self:flex-end;background:var(--ac);color:#fff}.a{background:var(--sf);border:1px solid var(--ln)}
+.card{border:1px solid var(--ln);background:var(--sf);border-radius:16px;padding:26px;min-height:150px;display:grid;place-items:center;text-align:center;font-size:1.25rem;font-weight:600;cursor:pointer}
+#clk{font-size:3.4rem;font-weight:800;letter-spacing:-.03em}
+#cv{width:100%;max-width:520px;border-radius:10px;touch-action:none;border:1px solid var(--ln)}
+iframe{width:100%;height:300px;border:1px solid var(--ln);border-radius:10px;background:#fff}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:9;display:none;max-width:90%}
+#md{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;place-items:center;z-index:9;padding:20px;text-align:center;color:#fff}#md img{max-width:100%;max-height:70vh}
+.note{font-size:.88rem;color:var(--mu);margin-top:12px}
+</style></head><body>
+<nav id="nav"></nav><main id="v"></main><div id="toast"></div><div id="md" data-a="cm"></div>
+<script>
+const $=s=>document.querySelector(s),V={},A={},I={},H={};
+let S;try{S=JSON.parse(localStorage.getItem('nexo'))}catch(e){}
+S=S||{tasks:[],notes:[],cards:[],chat:[],nq:'',od:[1.48,1.51,1.25],stake:100,code:'',d:{bg:'#0b8a80',items:[{k:'t',t:'Sua ideia aqui',x:70,y:380,s:110,c:'#ffffff'},{k:'o',x:900,y:180,w:200,c:'#f2b01e'}]}};
+S.code=S.code||'<body style="font:20px system-ui;padding:24px"><h1>Olá!</h1><p>Edite o código e veja o resultado ao vivo.</p>';
+const save=()=>{try{localStorage.setItem('nexo',JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9),p2=n=>String(n).padStart(2,'0');
+const now16=()=>{const d=new Date(Date.now()-new Date().getTimezoneOffset()*6e4);return d.toISOString().slice(0,16)};
+const today=()=>now16().slice(0,10);
+function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>e.style.display='none',3200)}
+const TABS=[['inicio','Início'],['chat','Assistente'],['tarefas','Tarefas'],['notas','Notas'],['estudo','Estudo'],['design','Design'],['codigo','Código'],['odds','Odds']];
+let view='inicio',flt='hoje',nid=null,fi=0,fl=0,dsel=null;
+$('#nav').innerHTML=TABS.map(t=>`<button data-a="go" data-v="${t[0]}">${t[1]}</button>`).join('');
+function render(){$('#v').innerHTML=V[view]();H[view]&&H[view]();document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==view))}
+A.go=v=>{view=v;render();scrollTo(0,0)};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&A[b.dataset.a])A[b.dataset.a](b.dataset.v,b)});
+document.addEventListener('input',e=>{const i=e.target.dataset.i;if(i&&I[i])I[i](e.target)});
+document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.dataset.k&&!e.shiftKey){e.preventDefault();A[e.target.dataset.k]()}});
+function pdt(s){let d=new Date(),f=0,c=s;
+ if(/amanh[ãa]/i.test(s)){d.setDate(d.getDate()+1);f=1;c=c.replace(/amanh[ãa]/i,'')}else if(/\bhoje\b/i.test(s)){f=1;c=c.replace(/\bhoje\b/i,'')}
+ const m=s.match(/(?:às|as)\s*(\d{1,2})(?:[:h](\d{2}))?|\b(\d{1,2}):(\d{2})\b/i);let h=9,mi=0;
+ if(m){f=1;h=+(m[1]||m[3]);mi=+(m[2]||m[4]||0);c=c.replace(m[0],'')}
+ return{t:c.replace(/\s+/g,' ').trim(),due:f?`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(h)}:${p2(mi)}`:''}}
+function addTask(t,due,p){const k={id:uid(),t,due:due||'',p:!!p,done:0,al:due&&due<now16()?1:0};S.tasks.push(k);save();return k}
+/* ---------- Início ---------- */
+const FL={hoje:t=>t.due.slice(0,10)==today(),atraso:t=>t.due&&t.due<now16(),prio:t=>t.p,prox:t=>t.due&&t.due.slice(0,10)>today(),todas:()=>1};
+const FN={hoje:'Hoje',atraso:'Em atraso',prio:'Prioridades',prox:'Próximos',todas:'Todas'};
+const cnt=f=>S.tasks.filter(t=>!t.done&&FL[f](t)).length;
+V.inicio=()=>{const h=new Date().getHours();return`<h1>${h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'}.</h1><p class="mu">Tarefas, notas, estudo, design, código e contas num lugar só. Tudo fica salvo neste aparelho.</p>
+<div class="tiles">${['hoje','atraso','prio','prox'].map(f=>`<button data-a="flt" data-v="${f}"><b class="${f=='atraso'&&cnt(f)?'late':''}">${cnt(f)}</b>${FN[f]}</button>`).join('')}</div>
+<div class="f"><input id="qc" data-k="qc" placeholder="Anote algo: ligar para o João amanhã às 15:30"><button class="b p" data-a="qc">Adicionar</button></div>
+<div class="f"><input id="gs" data-i="gs" placeholder="Buscar em tarefas, notas e flashcards"></div><div id="sr"></div>
+<details class="note" open><summary>Configurar IA</summary><div class="f"><input type="password" data-i="key" placeholder="Chave da API (sk-ant-...)" value="${esc(S.key||'')}" autocomplete="off"></div><p class="note">A chave fica só neste aparelho. Use um app com a sua chave apenas para uso pessoal.</p></details>
+<details class="note"><summary>Backup dos seus dados</summary><textarea id="bk" placeholder="Cole aqui um backup para restaurar"></textarea><div class="f"><button class="b" data-a="exp">Copiar backup</button><button class="b" data-a="imp">Restaurar</button></div></details>`};
+A.qc=()=>{const v=$('#qc').value.trim();if(!v)return;const r=pdt(v);addTask(r.t||v,r.due);toast('Tarefa criada');render()};
+A.flt=v=>{flt=v;A.go('tarefas')};
+function gs(q){q=q.toLowerCase();if(!q)return'';const r=[];
+ S.tasks.forEach(t=>t.t.toLowerCase().includes(q)&&r.push(['Tarefa',t.t,'tarefas']));
+ S.notes.forEach(n=>(n.t+' '+n.b).toLowerCase().includes(q)&&r.push(['Nota',n.t||'Sem título','notas']));
+ S.cards.forEach(c=>(c.q+c.a).toLowerCase().includes(q)&&r.push(['Card',c.q,'estudo']));
+ return r}
+I.gs=el=>{const r=gs(el.value);$('#sr').innerHTML=el.value?(r.length?r.map(x=>`<div class="row"><small>${x[0]}</small><span>${esc(x[1])}</span><button class="b" data-a="go" data-v="${x[2]}">Abrir</button></div>`).join(''):'<p class="mu">Nada encontrado.</p>'):''};
+I.key=el=>{S.key=el.value.trim();save()};
+A.exp=()=>{const t=JSON.stringify({...S,key:''});$('#bk').value=t;try{navigator.clipboard.writeText(t);toast('Backup copiado')}catch(e){toast('Copie o texto da caixa')}};
+A.imp=()=>{try{const d=JSON.parse($('#bk').value);if(!d.tasks)throw 0;S={...d,key:S.key};save();toast('Dados restaurados');render()}catch(e){toast('Backup inválido')}};
+/* ---------- Tarefas ---------- */
+V.tarefas=()=>{const L=S.tasks.filter(FL[flt]).sort((a,b)=>a.done-b.done||(a.due||'9').localeCompare(b.due||'9'));
+return`<h2>Tarefas</h2><div class="f">${Object.keys(FN).map(f=>`<button class="b chip ${f==flt?'on':''}" data-a="flt" data-v="${f}">${FN[f]} ${cnt(f)}</button>`).join('')}</div>
+<div class="f"><input id="tt" data-k="addT" placeholder="Nova tarefa"><input type="datetime-local" id="td"><label><input type="checkbox" id="tp"> Prioridade</label><button class="b p" data-a="addT">Adicionar</button></div>
+${L.length?L.map(t=>`<div class="row"><input type="checkbox" data-i="tog" data-v="${t.id}" ${t.done?'checked':''}><span style="${t.done?'text-decoration:line-through;opacity:.55':''}">${t.p?'⚑ ':''}${esc(t.t)}<br><small class="${t.due&&t.due<now16()&&!t.done?'late':''}">${t.due?t.due.replace('T',' às '):'sem data'}</small></span><button class="b d" data-a="delT" data-v="${t.id}">Apagar</button></div>`).join(''):'<p class="mu">Nenhuma tarefa nesta lista. Adicione uma acima.</p>'}
+<p class="note">Os lembretes aparecem aqui enquanto o app estiver aberto.</p>`};
+A.addT=()=>{const t=$('#tt').value.trim();if(!t)return;addTask(t,$('#td').value,$('#tp').checked);render()};
+I.tog=el=>{const t=S.tasks.find(x=>x.id==el.dataset.v);if(t){t.done=el.checked?1:0;save();render()}};
+A.delT=v=>{S.tasks=S.tasks.filter(t=>t.id!=v);save();render()};
+setInterval(()=>{const n=now16();S.tasks.forEach(t=>{if(!t.done&&t.due&&t.due<=n&&!t.al){t.al=1;toast('Lembrete: '+t.t);try{Notification.permission=='granted'&&new Notification(t.t)}catch(e){}}});save()},20000);
+/* ---------- Notas ---------- */
+const nlist=()=>{const q=(S.nq||'').toLowerCase();return S.notes.filter(n=>(n.t+n.b).toLowerCase().includes(q)).sort((a,b)=>(b.pin|0)-(a.pin|0)).map(n=>`<button data-a="selN" data-v="${n.id}" class="${n.id==nid?'on':''}">${n.pin?'📌 ':''}${esc(n.t||'Sem título')}</button>`).join('')||'<p class="mu">Sem notas ainda.</p>'};
+V.notas=()=>{const n=S.notes.find(x=>x.id==nid);return`<h2>Notas</h2><div class="two"><div><div class="f"><input data-i="nq" placeholder="Buscar" value="${esc(S.nq||'')}"><button class="b p" data-a="newN">Nova</button></div><div class="nl" id="nl">${nlist()}</div></div>
+<div>${n?`<input data-i="nt" style="width:100%;font-weight:800;font-size:1.2rem" value="${esc(n.t)}" placeholder="Título"><textarea data-i="nb" style="margin-top:8px;min-height:240px" placeholder="Escreva. Linhas com - viram tarefas. Linhas com pergunta :: resposta viram flashcards.">${esc(n.b)}</textarea>
+<div class="f"><button class="b" data-a="pinN">${n.pin?'Desafixar':'Fixar'}</button><button class="b" data-a="sumN">Resumir</button><button class="b" data-a="n2t">Linhas “-” em tarefas</button><button class="b" data-a="n2c">Gerar flashcards</button><button class="b d" data-a="delN">Apagar</button></div><div id="sm" class="note"></div>`:'<p class="mu">Escolha uma nota ou crie uma nova.</p>'}</div></div>`};
+const cur=()=>S.notes.find(x=>x.id==nid);
+A.newN=()=>{const n={id:uid(),t:'',b:'',pin:0};S.notes.push(n);nid=n.id;save();render()};
+A.selN=v=>{nid=v;render()};A.pinN=()=>{cur().pin=!cur().pin;save();render()};
+A.delN=()=>{S.notes=S.notes.filter(n=>n.id!=nid);nid=null;save();render()};
+I.nq=el=>{S.nq=el.value;$('#nl').innerHTML=nlist()};I.nt=el=>{cur().t=el.value;save();$('#nl').innerHTML=nlist()};I.nb=el=>{cur().b=el.value;save()};
+A.n2t=()=>{const L=cur().b.split('\n').filter(l=>/^\s*-\s+/.test(l));L.forEach(l=>{const r=pdt(l.replace(/^\s*-\s+/,''));addTask(r.t,r.due)});toast(L.length+' tarefa(s) criada(s)')};
+A.n2c=()=>{let c=0;cur().b.split('\n').forEach(l=>{const m=l.split('::');if(m.length==2&&m[0].trim()){S.cards.push({id:uid(),q:m[0].trim(),a:m[1].trim()});c++}});save();toast(c+' flashcard(s) criado(s)')};
+A.sumN=()=>{const b=cur().b,s=b.split(/(?<=[.!?])\s+/).filter(x=>x.trim().length>20);if(s.length<4){$('#sm').textContent='Texto curto demais para resumir.';return}
+ const f={};b.toLowerCase().match(/[a-zà-ú]{5,}/g).forEach(w=>f[w]=(f[w]||0)+1);
+ const sc=s.map((x,i)=>[(x.toLowerCase().match(/[a-zà-ú]{5,}/g)||[]).reduce((a,w)=>a+f[w],0)/Math.sqrt(x.length),i]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1]).sort((a,b)=>a-b);
+ $('#sm').textContent='Resumo: '+sc.map(i=>s[i].trim()).join(' ')};
+/* ---------- Estudo ---------- */
+let pm={left:1500,on:0,len:1500,h:0};
+const fmt=s=>p2(Math.floor(s/60))+':'+p2(s%60);
+V.estudo=()=>{const c=S.cards[fi%Math.max(S.cards.length,1)];return`<h2>Estudo</h2><p class="mu">Foco por blocos de tempo e revisão com flashcards.</p>
+<div id="clk">${fmt(pm.left)}</div><div class="f"><button class="b p" data-a="pm">${pm.on?'Pausar':'Iniciar'}</button><button class="b" data-a="pmm" data-v="1500">Foco 25</button><button class="b" data-a="pmm" data-v="300">Pausa 5</button></div>
+<h2 style="margin-top:28px">Flashcards</h2>${c?`<div class="card" data-a="flip">${esc(fl?c.a:c.q)}</div><div class="f"><button class="b" data-a="flip">Virar</button><button class="b p" data-a="nx">Próximo</button><button class="b d" data-a="delC">Apagar</button><span class="mu">${fi%S.cards.length+1} de ${S.cards.length}</span></div>`:'<p class="mu">Crie cards abaixo ou pelas notas, usando pergunta :: resposta.</p>'}
+<div class="f"><input id="cq" placeholder="Pergunta"><input id="ca" data-k="addC" placeholder="Resposta"><button class="b" data-a="addC">Salvar card</button></div>`};
+A.flip=()=>{fl=!fl;render()};A.nx=()=>{fi=S.cards.length?Math.floor(Math.random()*S.cards.length):0;fl=0;render()};
+A.delC=()=>{S.cards.splice(fi%S.cards.length,1);fl=0;save();render()};
+A.addC=()=>{const q=$('#cq').value.trim(),a=$('#ca').value.trim();if(q&&a){S.cards.push({id:uid(),q,a});save();render()}};
+A.pmm=v=>{clearInterval(pm.h);pm={left:+v,len:+v,on:0,h:0};render()};
+A.pm=()=>{if(pm.on){clearInterval(pm.h);pm.on=0}else{pm.on=1;pm.h=setInterval(()=>{pm.left--;const e=$('#clk');e&&(e.textContent=fmt(pm.left));if(pm.left<=0){clearInterval(pm.h);pm.on=0;pm.left=pm.len;toast('Tempo encerrado');view=='estudo'&&render()}},1000)}render()};
+/* ---------- Design ---------- */
+const PRE=[{bg:'#0b8a80',items:[{k:'t',t:'Sua ideia aqui',x:70,y:380,s:110,c:'#ffffff'},{k:'o',x:900,y:180,w:200,c:'#f2b01e'}]},{bg:'#f4efe6',items:[{k:'r',x:0,y:700,w:1080,c:'#e5533d'},{k:'t',t:'Grande abertura',x:70,y:150,s:120,c:'#17191c'},{k:'t',t:'Sábado, 19h',x:70,y:820,s:70,c:'#ffffff'}]},{bg:'#17191c',items:[{k:'o',x:540,y:540,w:760,c:'#3cc7ba'},{k:'t',t:'Novo',x:330,y:430,s:220,c:'#17191c'}]}];
+V.design=()=>`<h2>Design</h2><p class="mu">Arraste os elementos no quadro. Toque num deles para editar.</p><canvas id="cv" width="1080" height="1080"></canvas>
+<div class="f"><label>Fundo <input type="color" data-i="dbg" value="${S.d.bg}"></label><label>Cor <input type="color" id="dc" data-i="dcol" value="#ffffff"></label><label>Tamanho <input type="range" id="ds" min="20" max="400" data-i="dsz"></label></div>
+<div class="f"><input id="dt" data-i="dtx" placeholder="Texto do elemento selecionado"></div>
+<div class="f"><button class="b" data-a="addD" data-v="t">+ Texto</button><button class="b" data-a="addD" data-v="r">+ Retângulo</button><button class="b" data-a="addD" data-v="o">+ Círculo</button><button class="b d" data-a="delD">Remover</button></div>
+<div class="f">${PRE.map((x,i)=>`<button class="b chip" data-a="preD" data-v="${i}">Modelo ${i+1}</button>`).join('')}<button class="b p" data-a="png">Ver imagem PNG</button></div>`;
+let cx;const bb=i=>i.k=='t'?(cx.font=`800 ${i.s}px 'Bricolage Grotesque',sans-serif`,[i.x,i.y,cx.measureText(i.t).width,i.s]):i.k=='r'?[i.x,i.y,i.w,i.w*.6]:[i.x-i.w/2,i.y-i.w/2,i.w,i.w];
+function draw(){const c=$('#cv');if(!c)return;cx=c.getContext('2d');cx.fillStyle=S.d.bg;cx.fillRect(0,0,1080,1080);cx.textBaseline='top';
+ S.d.items.forEach((i,k)=>{cx.fillStyle=i.c;if(i.k=='r')cx.fillRect(i.x,i.y,i.w,i.w*.6);else if(i.k=='o'){cx.beginPath();cx.arc(i.x,i.y,i.w/2,0,7);cx.fill()}else{cx.font=`800 ${i.s}px 'Bricolage Grotesque',sans-serif`;cx.fillText(i.t,i.x,i.y)}
+  if(k===dsel){const b=bb(i);cx.strokeStyle='#fff';cx.lineWidth=5;cx.setLineDash([14,10]);cx.strokeRect(b[0]-6,b[1]-6,b[2]+12,b[3]+12);cx.setLineDash([])}})}
+H.design=()=>{const c=$('#cv');let drag=null;draw();
+ const pt=e=>{const r=c.getBoundingClientRect(),k=1080/r.width;return[(e.clientX-r.left)*k,(e.clientY-r.top)*k]};
+ c.onpointerdown=e=>{const[x,y]=pt(e);dsel=null;for(let k=S.d.items.length-1;k>=0;k--){const b=bb(S.d.items[k]);if(x>=b[0]&&x<=b[0]+b[2]&&y>=b[1]&&y<=b[1]+b[3]){dsel=k;drag=[x-S.d.items[k].x,y-S.d.items[k].y];break}}
+  const i=S.d.items[dsel];if(i){$('#dc').value=i.c;$('#ds').value=i.s||i.w;$('#dt').value=i.t||''}draw();c.setPointerCapture(e.pointerId)};
+ c.onpointermove=e=>{if(!drag)return;const[x,y]=pt(e),i=S.d.items[dsel];i.x=x-drag[0];i.y=y-drag[1];draw()};c.onpointerup=()=>{drag=null;save()}};
+const sd=()=>S.d.items[dsel];
+I.dbg=el=>{S.d.bg=el.value;save();draw()};I.dcol=el=>{sd()&&(sd().c=el.value,save(),draw())};
+I.dsz=el=>{const i=sd();if(i){i.k=='t'?i.s=+el.value:i.w=+el.value*(i.k=='t'?1:2);save();draw()}};
+I.dtx=el=>{const i=sd();if(i&&i.k=='t'){i.t=el.value;save();draw()}};
+A.addD=v=>{S.d.items.push(v=='t'?{k:'t',t:'Texto',x:100,y:100,s:100,c:'#ffffff'}:{k:v,x:v=='o'?540:300,y:v=='o'?540:300,w:300,c:'#f2b01e'});dsel=S.d.items.length-1;save();draw()};
+A.delD=()=>{if(dsel!==null){S.d.items.splice(dsel,1);dsel=null;save();draw()}};
+A.preD=v=>{S.d=JSON.parse(JSON.stringify(PRE[v]));dsel=null;save();render()};
+A.png=()=>{dsel=null;draw();$('#md').innerHTML=`<div><img src="${$('#cv').toDataURL('image/png')}" alt="Sua arte"><p>Segure sobre a imagem para salvar ou compartilhar.<br>Toque fora para fechar.</p></div>`;$('#md').style.display='grid'};
+A.cm=()=>{$('#md').style.display='none'};
+/* ---------- Código ---------- */
+const TPL={calc:'<body style="font:22px system-ui;padding:24px"><input id=a type=number value=2 style="width:80px;font:inherit"> + <input id=b type=number value=3 style="width:80px;font:inherit"> = <b id=r>5</b><script>const f=()=>r.textContent=+a.value+ +b.value;a.oninput=b.oninput=f<\/script>',pag:'<body style="margin:0;display:grid;place-items:center;height:100vh;background:#0b8a80;color:#fff;font:700 40px system-ui"><div>Meu app</div>',cron:'<body style="font:60px system-ui;text-align:center;padding:40px"><div id=t>0.0</div><button onclick="go()" style="font:24px system-ui">Iniciar/Parar</button><script>let i,s=0;function go(){i?(clearInterval(i),i=0):i=setInterval(()=>t.textContent=(s+=.1).toFixed(1),100)}<\/script>'};
+V.codigo=()=>`<h2>Código</h2><p class="mu">Escreva HTML, CSS e JavaScript e veja o resultado na hora.</p><div class="f"><button class="b chip" data-a="tpl" data-v="calc">Calculadora</button><button class="b chip" data-a="tpl" data-v="cron">Cronômetro</button><button class="b chip" data-a="tpl" data-v="pag">Página</button><button class="b" data-a="cpy">Copiar código</button></div>
+<textarea id="src" data-i="src" spellcheck="false" style="font-family:ui-monospace,monospace;font-size:14px">${esc(S.code)}</textarea><div style="height:12px"></div><iframe id="fr" sandbox="allow-scripts" title="Prévia"></iframe>`;
+H.codigo=()=>{$('#fr').srcdoc=S.code};
+I.src=el=>{S.code=el.value;save();clearTimeout(I.h);I.h=setTimeout(()=>$('#fr').srcdoc=S.code,350)};
+A.tpl=v=>{S.code=TPL[v];save();render()};A.cpy=()=>{try{navigator.clipboard.writeText(S.code);toast('Código copiado')}catch(e){toast('Selecione e copie o texto')}};
+/* ---------- Odds ---------- */
+V.odds=()=>`<h2>Odds e múltiplas</h2><p class="mu">Calcule o retorno de uma múltipla e a chance mínima de acerto que a conta exige.</p>
+<div class="f"><label>Valor apostado <input type="number" min="0" data-i="stk" value="${S.stake}" style="width:110px"></label></div>
+<div id="ol">${S.od.map((o,i)=>`<div class="row"><span>Seleção ${i+1}</span><input type="number" step="0.01" min="1" data-i="od" data-n="${i}" value="${o}" style="width:100px"><button class="b d" data-a="delO" data-v="${i}">Remover</button></div>`).join('')}</div>
+<div class="f"><button class="b" data-a="addO">+ Seleção</button></div><div id="or"></div>
+<p class="note">As odds já embutem a margem da casa: a chance implícita só diz o quanto você precisaria acertar para empatar. Nenhuma conta garante lucro. Aposte só o que pode perder e procure ajuda se o jogo deixar de ser diversão.</p>`;
+function calc(){const t=S.od.reduce((a,o)=>a*(+o||1),1),r=t*S.stake;$('#or').innerHTML=`<div class="tiles"><button><b>${t.toFixed(2)}</b>Odd total</button><button><b>${r.toFixed(2)}</b>Retorno</button><button><b>${(r-S.stake).toFixed(2)}</b>Lucro se acertar</button><button><b>${(100/t).toFixed(1)}%</b>Chance mínima p/ empatar</button></div>`}
+H.odds=calc;I.stk=el=>{S.stake=+el.value||0;save();calc()};I.od=el=>{S.od[+el.dataset.n]=+el.value;save();calc()};
+A.addO=()=>{S.od.push(1.5);save();render()};A.delO=v=>{S.od.splice(+v,1);save();render()};
+/* ---------- Assistente ---------- */
+V.chat=()=>`<h2>Assistente</h2><p class="mu">Comandos rápidos funcionam sem internet. O resto vai para a IA, que também cria tarefas, notas e apps pra você.</p>
+<div class="msgs" id="ms">${S.chat.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join('')||'<div class="m a">Oi! Peça uma tarefa, uma conta ou uma busca.</div>'}</div>
+<div class="f"><input id="ci" data-k="send" placeholder="Ex.: tarefa: pagar internet amanhã às 10:00"><button class="b" data-a="mic">🎤</button><button class="b p" data-a="send">Enviar</button><button class="b" data-a="clr">Limpar</button></div>`;
+H.chat=()=>{const m=$('#ms');m.scrollTop=m.scrollHeight};
+function ans(q){let m;
+ if(m=q.match(/^(?:tarefa|task)\s*:?\s+(.+)/i)){const r=pdt(m[1]);addTask(r.t,r.due);return`Tarefa criada: ${r.t}${r.due?' para '+r.due.replace('T',' às '):''}.`}
+ if(m=q.match(/^(?:lembrar|lembrete)\s*:?\s*(?:de\s+)?(.+)/i)){const r=pdt(m[1]);const d=r.due||now16();addTask(r.t,d);return`Aviso marcado: ${r.t}, ${d.replace('T',' às ')}.`}
+ if(m=q.match(/^nota\s*:?\s+(.+)/i)){S.notes.push({id:uid(),t:m[1].slice(0,40),b:m[1],pin:0});save();return'Nota salva.'}
+ if(m=q.match(/^(?:buscar|procurar|achar)\s+(.+)/i)){const r=gs(m[1]);return r.length?r.map(x=>`${x[0]}: ${x[1]}`).join('\n'):'Não achei nada com esse termo.'}
+ if(/^(hoje|agenda|o que tenho)/i.test(q)){const L=S.tasks.filter(t=>!t.done&&(FL.hoje(t)||FL.atraso(t)));return L.length?L.map(t=>'• '+t.t+(t.due?' ('+t.due.slice(11)+')':'')).join('\n'):'Nada pendente para hoje.'}
+ if(/(cri|faz|fa[cç]a).*(app|site|p[aá]gina|calculadora|cron[oô]metro)/i.test(q)){const k=/calc/i.test(q)?'calc':/cron/i.test(q)?'cron':'pag';S.code=TPL[k];save();setTimeout(()=>A.go('codigo'),900);return'Abri um modelo na aba Código. Edite lá e veja o resultado ao vivo.'}
+ const e=q.replace(/^(quanto [eé]|calcula|calcule)\s*/i,'').replace(/,/g,'.').replace(/\^/g,'**').replace(/x/gi,'*');
+ if(/^[\d+\-*/().%\s]+$/.test(e)&&/\d/.test(e)){try{const v=Function('"use strict";return('+e.replace(/(\d+(?:\.\d+)?)%/g,'($1/100)')+')')();if(isFinite(v))return'= '+(+v.toFixed(6))}catch(x){}}
+ if(/ajuda|help|comandos/i.test(q))return'Comandos:\n• tarefa: texto amanhã às 15:30\n• lembrar de texto às 18:00\n• nota: texto\n• buscar termo\n• hoje\n• calcula 12*(3+4)\n• crie uma calculadora';
+ return null}
+const TOOLS=[{name:'criar_tarefa',description:'Cria uma tarefa no app do usuário.',input_schema:{type:'object',properties:{titulo:{type:'string'},data_hora:{type:'string',description:'Opcional. AAAA-MM-DDTHH:MM, horário local.'}},required:['titulo']}},{name:'criar_nota',description:'Salva uma nota.',input_schema:{type:'object',properties:{titulo:{type:'string'},texto:{type:'string'}},required:['titulo','texto']}},{name:'criar_app_html',description:'Coloca no editor de código um app completo em um único arquivo HTML, com CSS e JS inline.',input_schema:{type:'object',properties:{html:{type:'string'}},required:['html']}}];
+async function askAI(){if(!S.key)throw new Error('sem chave');
+ const ctx={tarefas_pendentes:S.tasks.filter(t=>!t.done).map(t=>t.t+(t.due?' ('+t.due+')':'')).slice(0,30),notas:S.notes.map(n=>n.t).slice(0,30)};
+ const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':S.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:S.model||'claude-sonnet-5-5',max_tokens:4000,system:'Você é o assistente do Nexo, um app de tarefas, notas, estudo, design e código. Responda em português do Brasil, direto e natural. Use as ferramentas quando o usuário pedir para criar algo. Agora: '+new Date().toISOString()+'. Contexto: '+JSON.stringify(ctx),tools:TOOLS,messages:S.chat.filter(m=>m.t!='…').slice(-19).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t}))})});
+ const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||r.status);
+ const text=d.content.filter(x=>x.type=='text').map(x=>x.text).join('\n');
+ runActs(d.content.filter(x=>x.type=='tool_use').map(x=>({name:x.name,input:x.input})));return text||'Pronto.'}
+function runActs(L){(L||[]).forEach(a=>{const i=a.input||{};if(a.name=='criar_tarefa')addTask(i.titulo,i.data_hora||'');else if(a.name=='criar_nota'){S.notes.push({id:uid(),t:i.titulo||'',b:i.texto||'',pin:0})}else if(a.name=='criar_app_html'){S.code=i.html;setTimeout(()=>A.go('codigo'),900)}});save()}
+A.send=async()=>{const i=$('#ci'),q=i.value.trim();if(!q)return;S.chat.push({r:'u',t:q});let a=ans(q);
+ if(a===null){S.chat.push({r:'a',t:'…'});render();try{a=await askAI()}catch(e){a=S.key?'Erro da IA: '+e.message:'Cole sua chave da API em Início, na seção Configurar IA.'}S.chat.pop()}
+ S.chat.push({r:'a',t:a});S.chat=S.chat.slice(-60);save();render()};
+A.clr=()=>{S.chat=[];save();render()};
+A.mic=()=>{const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return toast('Seu navegador não tem reconhecimento de voz');const r=new R();r.lang='pt-BR';r.onresult=e=>{$('#ci').value=e.results[0][0].transcript};r.onerror=()=>toast('Não consegui ouvir');r.start();toast('Pode falar')};
+try{Notification.permission=='default'&&Notification.requestPermission()}catch(e){}
+render();
+</script></body></html>
